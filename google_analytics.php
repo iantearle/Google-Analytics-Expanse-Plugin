@@ -15,10 +15,14 @@ function ga_config_menu()
 	<!-- /*   Google Analytics Menu   //===============================*/ -->
 	<h3 class="stretchToggle" title="googleanalytics"><a href="#googleanalytics"><span>Google Analytics</span></a></h3>
 	<div class="stretch" id="googleanalytics">
-	<label for="ga_tracking_id">Account ID</label>
-	<input type="text" name="ga_tracking_id" id="ga_tracking_id" value="<?php echo getOption('ga_tracking_id'); ?>">
-	<?php tooltip('Google Analytics Account ID', 'Sign-in to your Google Analytics account.<br/><a href=\"http://google.com/analytics\">http://google.com/analytics</a>. Copy and paste the provided Account ID into the input box.'); ?>
+	<div class="control-group">
+		<label for="ga_tracking_id" class="control-label">Account ID</label>
+		<div class="controls">
+			<input type="text" name="ga_tracking_id" id="ga_tracking_id" value="<?php echo getOption('ga_tracking_id'); ?>">
+			<?php tooltip('Google Analytics Account ID', 'Sign-in to your Google Analytics account.<br/><a href=\"http://google.com/analytics\">http://google.com/analytics</a>. Copy and paste the provided Account ID into the input box.'); ?>
+		</div>
 	</div>
+
 	<?php
 }
 
@@ -31,7 +35,7 @@ function ga_config()
 			$output .= "<div id=\"message\" class=\"updated fade\"><p><strong>" . __("Account ID cleared. Stats will not be logged.") . "</strong></p></div>";
 		else
 			$output .= "<div id=\"message\" class=\"updated fade\"><p><strong>" . __("Saved Changes.") . "</strong></p></div>";
-			
+
 		update_option("ga_tracking_id", trim($_POST["ga_tracking_id"]));
 	}
 }
@@ -41,24 +45,24 @@ function ga_include_code()
 	$ga_id = getOption("ga_tracking_id");
 	if (empty($ga_id))
 		return;
-		
+
 	$print = "\n<!-- Google Analytics Expanse Plugin -->\n";
 	$print .= "<script type=\"text/javascript\">\n";
-	$print .= "var _gaq = _gaq &#124;&#124; [];\n";
+	$print .= "var _gaq = _gaq || [];\n";
 	$print .= "_gaq.push(['_setAccount', '$ga_id']);\n";
 	$print .= "_gaq.push(['_trackPageview']);\n";
 	$print .= "(function() {\n";
 	$print .= "var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n";
-	$print .= "ga.src = ('https&#58;' == document.location.protocol ? 'https&#58;//ssl' &#58; 'http&#58;//www') + '.google-analytics.com/ga.js';\n";
+	$print .= "ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n";
 	$print .= "var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n";
 	$print .= "})();\n";
 	$print .= "</script>\n";
 	$print .= "<!-- End -->\n\n";
-		
+
 	return $print;
 }
 $gainclude = ga_include_code();
 if(function_exists('add_variable')){
-	add_variable('google_analytics:'.(string)$gainclude, 'footer');
+	add_variable('google_analytics:'.(string) safe_tpl($gainclude), 'footer');
 }
 ?>
